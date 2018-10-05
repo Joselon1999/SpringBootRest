@@ -35,13 +35,15 @@ public class UserResources {
     @GetMapping("/users/{id}")
     public Resource<User> retrieveUser(@PathVariable int id) {
         User user = service.findOne(id);
+        if (user==null){
+            throw new UserNotFoundException("id-"+id);
+        }
 
-        if(user==null)
-            throw new UserNotFoundException("id-"+ id);
         Resource<User> resource = new Resource<User>(user);
-        ControllerLinkBuilder linkTo =
-                linkTo(methodOn(this.getClass()).retrieveAllUsers());
-        resource.add(linkTo.withRel("all-users"));
+
+        ControllerLinkBuilder linkto = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        resource.add(linkto.withRel("all-users"));
+
         return resource;
     }
 
@@ -53,17 +55,9 @@ public class UserResources {
             throw new UserNotFoundException("id-"+ id);
     }
 
-    //
-    // input - details of user
-    // output - CREATED & Return the created URI
-
-    //HATEOAS
-
     @PostMapping("/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         User savedUser = service.save(user);
-        // CREATED
-        // /user/{id}     savedUser.getId()
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
