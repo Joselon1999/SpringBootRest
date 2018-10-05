@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.example.rest.webservices.restfulwebservices.Exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-public class UserResource {
+public class UserResources {
 
     @Autowired
     private UserDaoService service;
@@ -37,19 +38,10 @@ public class UserResource {
 
         if(user==null)
             throw new UserNotFoundException("id-"+ id);
-
-
-        //"all-users", SERVER_PATH + "/users"
-        //retrieveAllUsers
         Resource<User> resource = new Resource<User>(user);
-
         ControllerLinkBuilder linkTo =
                 linkTo(methodOn(this.getClass()).retrieveAllUsers());
-
         resource.add(linkTo.withRel("all-users"));
-
-        //HATEOAS
-
         return resource;
     }
 
